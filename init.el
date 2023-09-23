@@ -141,6 +141,14 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   :if (< emacs-major-version 29)
   :ensure t)
 
+(use-package treesit
+  :if (>= emacs-major-version 29)
+  :config
+  (setq treesit-language-source-alist
+        '((python "https://github.com/tree-sitter/tree-sitter-python")))
+  (setq major-mode-remap-alist
+        '((python-mode . python-ts-mode))))
+
 ;;;;;;;;;; COMPLETION ;;;;;;;;;;
 (use-package orderless
   :ensure t
@@ -301,13 +309,15 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
 
 ;;;;;;;; CODING ;;;;;;;;
 (use-package python
-  :init
-  (add-hook 'python-mode-hook
-            (lambda ()
-              (setq indent-tabs-mode nil)
-              (setq tab-width 4)
-              (setq python-indent-offset 4))))
-
+  :config
+  (defun my/python-mode-hook ()
+    (setq indent-tabs-mode nil)
+    (setq tab-width 4)
+    (setq python-indent-offset 4)
+   :hook
+   (python-mode . my/python-mode-hook)
+   :if (>= emacs-major-version 29)
+   (python-ts-mode . my/python-mode-hook)))
 
 (use-package cc-mode
   :init
