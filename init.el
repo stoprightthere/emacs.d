@@ -275,6 +275,30 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
        starttls-use-gnutls           t)))
 
 
+;;;;;;;; TELEGA ;;;;;;;;
+(defun my/telega-attach-clipboard-wsl (doc-p)
+  "Attach image from the clipboard in telega chatbuf under WSL.
+
+This works by saving the contents of the clipboard to a temporary
+file via PowerShell and running `telega-chatbuf-attach-media'.
+
+If `\\[universal-argument]' is given, then attach clipboard as document.
+"
+  (interactive "P")
+  (let* ((temporary-file-directory telega-temp-dir)
+         (tmpfile (telega-temp-name "clipboard" ".png"))
+         (coding-system-for-write 'binary))
+    (shell-command (format my/wsl-dump-clipboard-image-command tmpfile))
+    (telega-chatbuf-attach-media tmpfile (when doc-p 'preview))))
+
+(use-package telega
+  :bind-keymap ("C-c x" . telega-prefix-map))
+
+(use-package telega
+  :if (my/is-on-wsl)
+  :bind (:map telega-chat-mode-map ("C-c C-v" . my/telega-attach-clipboard-wsl)))
+
+
 ;;;;;;;; CODING ;;;;;;;;
 (use-package python
   :init
