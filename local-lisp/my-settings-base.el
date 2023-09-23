@@ -52,7 +52,8 @@
     :org-work-tasks-file nil
     :org-personal-tasks-file nil
     :org-journal-file nil
-    :org-roam-directory nil)
+    :org-roam-directory nil
+    :org-download-image-dir "~/Images/")
   "The plist, associating several org-mode related configurations with specific values of them")
 
 ;; Mail

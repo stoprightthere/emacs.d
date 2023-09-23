@@ -227,6 +227,18 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (org-roam-db-autosync-mode))
 
+
+(use-package org-download
+  :config
+  (setq
+   org-download-backend "wget"
+   org-download-method 'directory)
+  (when (my/is-on-wsl)
+   (setq org-download-screenshot-method my/wsl-dump-clipboard-image-command))
+  (setq-default
+   org-download-image-dir (plist-get my/org-config :org-download-image-dir)))
+
+
 ;;;;;;;; MAIL ;;;;;;;;
 
 ;; mu4e
