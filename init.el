@@ -29,6 +29,39 @@
 (native-compile-async "~/.emacs.d/local-lisp")
 (add-to-list 'load-path "~/.emacs.d/local-lisp")
 (setq load-prefer-newer t)
+
+
+;;;;;;;; WSL ;;;;;;;
+(when (eq system-type 'windows-nt)
+    (defun fp/ignore-wsl-acls (orig-fun &rest args)
+      "Ignore ACLs on WSL. WSL does not provide an ACL, but emacs
+expects there to be one before saving any file. Without this
+advice, files on WSL can not be saved.
+
+Note that this makes sense when Emacs runs on Windows and the
+access to WSL files is needed. If Emacs itself is on WSL, this is
+not needed."
+      (if (string-match-p "^//wsl\$/" (car args))
+          (progn (message "ignoring wsl acls") "")
+        (apply orig-fun args)))
+
+    (advice-add 'file-acl :around 'fp/ignore-wsl-acls))
+
+(defun my/is-on-wsl ()
+  "Determine if Emacs is on WSL (or WSL2).
+
+See URL `https://emacs.stackexchange.com/a/55295'."
+  (string-match "-[Mm]icrosoft" operating-system-release))
+
+(defconst my/wsl-dump-clipboard-image-command
+  "powershell.exe -Command \"(Get-Clipboard -Format image).Save('$(wslpath -w %s)')\""
+  "Command template to dump the image from the clipboard in a file specified by %s.
+
+Example usage:
+`(shell-command (format my/wsl-dump-clipboard-image-command filename))'
+
+Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues/178#issuecomment-1367606769'.")
+
 ;;;;;;;; PACKAGES ;;;;;;;;
 
 ;; elpa config
@@ -289,17 +322,7 @@
       ad-do-it))
   (ad-activate 'grep-compute-defaults))
 
-;; WSL
-(when (eq system-type 'windows-nt)
-    (defun fp/ignore-wsl-acls (orig-fun &rest args)
-      "Ignore ACLs on WSL. WSL does not provide an ACL, but emacs
-expects there to be one before saving any file. Without this
-advice, files on WSL can not be saved."
-      (if (string-match-p "^//wsl\$/" (car args))
-          (progn (message "ignoring wsl acls") "")
-        (apply orig-fun args)))
-
-    (advice-add 'file-acl :around 'fp/ignore-wsl-acls))
+;;;;;;;; WSL ;;;;;;;;
 
 ;;;;;;;; CUSTOM ;;;;;;;;
 ;; set custom file for Customize but never load it
