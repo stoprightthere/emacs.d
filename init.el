@@ -98,6 +98,9 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 (use-package corfu
   :ensure t)
 
+(use-package company
+  :ensure t)
+
 (use-package org-superstar
   :ensure t)
 
