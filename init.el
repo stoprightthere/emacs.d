@@ -106,14 +106,6 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 (use-package pyvenv
   :ensure t)
 
-;; tramp
-(use-package docker-tramp
-  :if (< emacs-major-version 29)
-  :ensure t
-  :config
-  (setq docker-tramp-docker-executable "docker")
-  (add-to-list 'tramp-remote-path 'tramp-own-remote-path))
-
 ;; various packages
 (use-package company
   :ensure t)
