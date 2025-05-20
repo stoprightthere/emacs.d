@@ -137,7 +137,8 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   :if (>= emacs-major-version 29)
   :config
   (setq treesit-language-source-alist
-        '((python "https://github.com/tree-sitter/tree-sitter-python")))
+        '((python "https://github.com/tree-sitter/tree-sitter-python")
+          (javascript "https://github.com/tree-sitter/tree-sitter-javascript")))
   (setq major-mode-remap-alist
         '((python-mode . python-ts-mode))))
 
