@@ -8,6 +8,7 @@
   (global-linum-mode 0))
 (global-hl-line-mode 0)
 (show-paren-mode 1)
+(setq-default cursor-type 'bar)
 
 (setq default-input-method "russian-computer")
 (setq inhibit-startup-screen t)
@@ -180,7 +181,6 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   (add-hook 'org-mode-hook
             (lambda ()
               (visual-line-mode)
-              (setq cursor-type 'bar)
               (variable-pitch-mode)
               (org-superstar-mode)))
 
