@@ -203,21 +203,6 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   ("C-c a" . org-agenda)
   ("C-c t" . org-capture))
 
-(use-package org-roam
-  :if (< emacs-major-version 29)
-  :custom
-  (org-roam-directory (plist-get my/org-config :org-roam-directory))
-  :bind (("C-c n l" . org-roam-buffer-toggle)
-         ("C-c n f" . org-roam-node-find)
-         ("C-c n g" . org-roam-graph)
-         ("C-c n i" . org-roam-node-insert)
-         ("C-c n c" . org-roam-capture)
-         ("C-c n t" . org-roam-tag-add))
-  :config
-  (setq org-roam-node-display-template (concat "${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (org-roam-db-autosync-mode))
-
-
 (use-package org-download
   :config
   (setq
