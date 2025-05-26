@@ -113,15 +113,15 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 (use-package emojify
   :ensure t)
 
-;; use tree-sitter
-(use-package tree-sitter
-  :if (< emacs-major-version 29)
-  :ensure t
-  :hook (python-mode . tree-sitter-hl-mode))
-(use-package tree-sitter-langs
-  :if (< emacs-major-version 29)
-  :ensure t)
+;; use tree-sitter when emacs is old
+(when (< emacs-major-version 29)
+  (use-package tree-sitter
+    :hook (python-mode . tree-sitter-hl-mode)
+    :ensure t)
+  (use-package tree-sitter-langs
+    :ensure t))
 
+;; use build-in treesit when emacs is new
 (use-package treesit
   :if (>= emacs-major-version 29)
   :config
@@ -129,7 +129,8 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
         '((python "https://github.com/tree-sitter/tree-sitter-python")
           (javascript "https://github.com/tree-sitter/tree-sitter-javascript")))
   (setq major-mode-remap-alist
-        '((python-mode . python-ts-mode))))
+        '((python-mode . python-ts-mode)
+          (js-mode . js-ts-mode))))
 
 ;;;;;;;;;; COMPLETION ;;;;;;;;;;
 (use-package orderless
