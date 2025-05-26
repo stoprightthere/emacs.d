@@ -91,18 +91,6 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   :ensure t
   :bind ("C-x g" . magit-status))
 
-;; lsp
-(use-package lsp-mode
-  :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  (setq lsp-keymap-prefix "C-c p")
-  :ensure t
-  :hook ((python-mode . lsp-deferred))
-  :commands lsp)
-(use-package lsp-docker
-  :ensure t)
-(use-package lsp-ui
-  :ensure t)
 (use-package pyvenv
   :ensure t)
 
