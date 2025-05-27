@@ -96,7 +96,7 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   :ensure t)
 
 ;; various packages
-(use-package company
+(use-package corfu
   :ensure t)
 (use-package org-superstar
   :ensure t)
@@ -143,6 +143,10 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   :ensure t
   :config
   (vertico-mode))
+
+;; perform INLINE completion on pressing TAB (i.e. ESC TAB in vanilla Emacs)
+(setq tab-always-indent 'complete)
+
 
 ;;;;;;;; PERSONAL SETTINGS ;;;;;;;;
 (let* ((my/settings-base-file "~/.emacs.d/local-lisp/my-settings-base.el")
