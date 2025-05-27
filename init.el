@@ -32,7 +32,7 @@
 (setq load-prefer-newer t)
 
 
-;;;;;;;; WSL ;;;;;;;
+;;;;;;;; WSL ;;;;;;;;
 (when (eq system-type 'windows-nt)
     (defun fp/ignore-wsl-acls (orig-fun &rest args)
       "Ignore ACLs on WSL. WSL does not provide an ACL, but emacs
@@ -63,8 +63,8 @@ Example usage:
 
 Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues/178#issuecomment-1367606769'.")
 
-;;;;;;;; PACKAGES ;;;;;;;;
 
+;;;;;;;; PACKAGES ;;;;;;;;
 ;; elpa config
 (require 'package)
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
@@ -87,7 +87,7 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   (package-install 'use-package))
 (require 'use-package)
 
-;; magit
+;; configure packages
 (use-package magit
   :ensure t
   :bind ("C-x g" . magit-status))
@@ -95,23 +95,32 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 (use-package pyvenv
   :ensure t)
 
-;; various packages
 (use-package corfu
   :ensure t)
+
 (use-package org-superstar
   :ensure t)
+
 (use-package markdown-mode
   :ensure t)
+
 (use-package flymake
   :ensure t)
+
 (use-package dockerfile-mode
   :ensure t)
+
 (use-package which-key
   :ensure t
   :config
   (which-key-mode))
+
 (use-package emojify
   :ensure t)
+
+(use-package doc-view
+  :config
+  (setq doc-view-resolution 200))
 
 ;; use tree-sitter when emacs is old
 (when (< emacs-major-version 29)
@@ -132,7 +141,8 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
         '((python-mode . python-ts-mode)
           (js-mode . js-ts-mode))))
 
-;;;;;;;;;; COMPLETION ;;;;;;;;;;
+
+;;;;;;;; COMPLETION ;;;;;;;;
 (use-package orderless
   :ensure t
   :custom
@@ -155,7 +165,6 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   (when (file-exists-p my/settings-overload-file)
     (require 'my-settings)))
 
-
 ;; Theme
 (load-theme (my/get-theme my/current-theme) t)
 
@@ -168,7 +177,6 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
             (face (plist-get (eval settings) :face)))
         (if attribute-value
             (set-face-attribute face nil attribute attribute-value))))))
-
 
 ;; org-mode
 (use-package org
@@ -219,7 +227,6 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 
 
 ;;;;;;;; MAIL ;;;;;;;;
-
 ;; mu4e
 (use-package mu4e
   :bind ("C-c m" . mu4e)
@@ -233,12 +240,14 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
    user-full-name                   my/user-full-name
    mu4e-view-show-images            t
    mu4e-sent-messages-behavior      'delete)
+
   ;; headers fields
   (setq mu4e-headers-fields '((:human-date . 12)
                               (:maildir . 12)
                               (:flags . 6)
                               (:from . 22)
                               (:subject)))
+
   ;; Gmail send (smtp) config
   (when my/gmail-smtp
       (setq
@@ -271,9 +280,11 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
     (telega-chatbuf-attach-media tmpfile (when doc-p 'preview))))
 
 (use-package telega
+  :disabled
   :bind-keymap ("C-c x" . telega-prefix-map))
 
 (use-package telega
+  :disabled
   :if (my/is-on-wsl)
   :bind (:map telega-chat-mode-map ("C-c C-v" . my/telega-attach-clipboard-wsl)))
 
@@ -285,6 +296,8 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
     (setq indent-tabs-mode nil)
     (setq tab-width 4)
     (setq python-indent-offset 4)
+    (when (file-directory-p "~/.local/bin")
+      (add-to-list 'exec-path "~/.local/bin"))
    :hook
    (python-mode . my/python-mode-hook)
    :if (>= emacs-major-version 29)
@@ -304,6 +317,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
 ;; treat .m files as Octave
 (add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode))
 
+
 ;;;;;;;; DIRED ;;;;;;;;
 (use-package dired-x
   :hook (dired-mode . dired-omit-mode)
@@ -312,17 +326,12 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
   (setq dired-omit-files
         (concat dired-omit-files "\\|^\\..+$")))
 
+
 ;;;;;;;; SPECIAL KEYS ;;;;;;;;
 (global-set-key (kbd "C-c l") 'goto-line)
 
 
-;;;;;;;;;;;;;;;;;;;;;;
-(use-package doc-view
-  :config
-  (setq doc-view-resolution 200))
-
 ;;;;;;;; WINDOWS ;;;;;;;;
-
 ;; some Windows-specific options that are not local
 (when (memq system-type '(windows-nt ms-dos))
   ;; tramp for windows
@@ -339,7 +348,6 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
       ad-do-it))
   (ad-activate 'grep-compute-defaults))
 
-;;;;;;;; WSL ;;;;;;;;
 
 ;;;;;;;; CUSTOM ;;;;;;;;
 ;; set custom file for Customize but never load it
