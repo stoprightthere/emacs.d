@@ -141,6 +141,15 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
         '((python-mode . python-ts-mode)
           (js-mode . js-ts-mode))))
 
+(use-package gptel
+  :ensure t
+  :config
+  (gptel-make-openai "llama-cpp"
+    :stream t
+    :protocol "http"
+    :host "localhost:8080"                ;; llama.cpp server location
+    :models '("test")))                   ;; any names, doesn't matter for llama.cpp
+
 
 ;;;;;;;; COMPLETION ;;;;;;;;
 (use-package orderless
