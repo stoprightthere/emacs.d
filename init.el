@@ -314,6 +314,20 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
               (auto-complete-mode)))
   :mode ("\\.h\\'" . c++-mode))
 
+(use-package dape
+  :hook
+  ;; Save breakpoints on quit
+  (kill-emacs . dape-breakpoint-save)
+  ;; Load breakpoints on startup
+  (after-init . dape-breakpoint-load)
+
+  :config
+  ;; Info buffers like gud (gdb-mi)
+  (setq dape-buffer-window-arrangement 'gud)
+  (setq dape-info-hide-mode-line nil)
+
+  :ensure t)
+
 ;; treat .m files as Octave
 (add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode))
 
