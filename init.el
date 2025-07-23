@@ -332,6 +332,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
     (setq indent-tabs-mode nil)
     (setq tab-width 4)
     (setq python-indent-offset 4)
+    (hl-line-mode 1)
     (when (file-directory-p "~/.local/bin")
       (add-to-list 'exec-path "~/.local/bin"))
    :hook
