@@ -337,8 +337,8 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
       (add-to-list 'exec-path "~/.local/bin"))
    :hook
    (python-mode . my/python-mode-hook)
-   :if (>= emacs-major-version 29)
-   (python-ts-mode . my/python-mode-hook)))
+   (if (>= emacs-major-version 29)
+       (python-ts-mode . my/python-mode-hook))))
 
 (use-package cc-mode
   :init
