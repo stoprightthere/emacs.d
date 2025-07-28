@@ -368,6 +368,10 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
 ;; treat .m files as Octave
 (add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode))
 
+;; allow eldoc to use at most 3 lines in the echo area
+;; prevents the echo area blowing up with a huge doc
+(setq eldoc-echo-area-use-multiline-p 3)
+
 
 ;;;;;;;; DIRED ;;;;;;;;
 (use-package dired-x
