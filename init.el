@@ -241,10 +241,12 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   (setq org-agenda-files (plist-get my/org-config :org-agenda-files))
   (setq org-default-notes-file (plist-get my/org-config :org-default-notes-file))
 
+  (setq org-id-link-to-org-use-id 'create-if-interactive)
+
   ;; org-capture
   (setq org-capture-templates
       `(("t" "Todo" entry (file ,(plist-get my/org-config :org-inbox-file))
-         "* TODO %?\n")
+         "* TODO %?\n%U\n%a")
         ("m" "Meeting" entry (file+headline ,(plist-get my/org-config :org-inbox-file) "Meetings")
          "* %? \n%^T\n")
         ("s" "Stuff" entry (file ,(plist-get my/org-config :org-inbox-file))
