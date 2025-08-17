@@ -316,11 +316,11 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
     (telega-chatbuf-attach-media tmpfile (when doc-p 'preview))))
 
 (use-package telega
-  :disabled
+  :defer t
   :bind-keymap ("C-c x" . telega-prefix-map))
 
 (use-package telega
-  :disabled
+  :defer t
   :if (my/is-on-wsl)
   :bind (:map telega-chat-mode-map ("C-c C-v" . my/telega-attach-clipboard-wsl)))
 
