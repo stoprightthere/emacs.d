@@ -136,10 +136,15 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   :config
   (setq treesit-language-source-alist
         '((python "https://github.com/tree-sitter/tree-sitter-python")
-          (javascript "https://github.com/tree-sitter/tree-sitter-javascript")))
+          (javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+          (bash "https://github.com/tree-sitter/tree-sitter-bash")
+          (css "https://github.com/tree-sitter/tree-sitter-css")
+          (html "https://github.com/tree-sitter/tree-sitter-html")))
   (setq major-mode-remap-alist
         '((python-mode . python-ts-mode)
-          (js-mode . js-ts-mode))))
+          (js-mode . js-ts-mode)
+          (bash-mode . bash-ts-mode)
+          (css-mode . css-ts-mode))))
 
 (use-package gptel
   :ensure t
