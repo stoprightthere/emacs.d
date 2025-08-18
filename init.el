@@ -120,6 +120,9 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 
 (use-package emojify
   :ensure t)
+(use-package vterm
+  :defer t
+  :bind ("C-c v" . vterm))
 
 (use-package doc-view
   :config
