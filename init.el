@@ -265,6 +265,7 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   ("C-c t" . org-capture))
 
 (use-package org-download
+  :defer t
   :config
   (setq
    org-download-backend "wget"
