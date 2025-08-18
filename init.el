@@ -110,6 +110,20 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 (use-package flymake
   :ensure t)
 
+(use-package dap-mode
+  :ensure t
+  :config
+  (require 'dap-python)
+  (setq dap-python-debugger 'debugpy)
+  (setq dap-python-executable "uv run python"))
+
+(use-package flymake-ruff
+  :disabled
+  :ensure t
+  :config
+  (setq flymake-ruff-program "uv run ruff")
+  :hook (eglot-managed-mode . flymake-ruff-load))
+
 (use-package dockerfile-mode
   :ensure t)
 
