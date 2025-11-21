@@ -278,14 +278,23 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   ("C-c a" . org-agenda)
   ("C-c t" . org-capture))
 
+
+(defconst my/xclip-dump-clipboad-image-command
+  "xclip -selection clipboard -t image/png -o > %s"
+  "Command template to dump the image from the clipboard in a file specified by %s using xclip.")
+
+
 (use-package org-download
-  :defer t
   :config
   (setq
    org-download-backend "wget"
    org-download-method 'directory)
   (when (my/is-on-wsl)
-   (setq org-download-screenshot-method my/wsl-dump-clipboard-image-command))
+    (setq org-download-screenshot-method my/wsl-dump-clipboard-image-command))
+  (when (and
+         (eq system-type 'gnu/linux)
+         (executable-find "xclip"))
+    (setq org-download-screenshot-method my/xclip-dump-clipboad-image-command))
   (setq-default
    org-download-image-dir (plist-get my/org-config :org-download-image-dir)))
 
