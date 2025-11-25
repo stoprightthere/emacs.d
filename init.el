@@ -298,6 +298,7 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 
 
 (use-package org-download
+  :ensure t
   :config
   (setq
    org-download-backend "wget"
