@@ -142,6 +142,19 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   :config
   (setq doc-view-resolution 200))
 
+;; grep -> ripgrep
+(use-package grep
+  :config
+  (when (executable-find "rg")
+    (grep-apply-setting  ;; orig:
+     'grep-command '("rg -nS --no-heading "))
+    (grep-apply-setting
+     'grep-find-command
+     ;; orig: ("find . -type f -exec grep --color=auto -nH --null -e  \\{\\} +" . 54)
+     '("rg -n -H --no-heading -e '' $(git rev-parse --show-toplevel || pwd)" . 27))
+    (grep-apply-setting
+     'grep-use-null-device nil)))
+
 ;; use tree-sitter when emacs is old
 (when (< emacs-major-version 29)
   (use-package tree-sitter
