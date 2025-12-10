@@ -110,13 +110,6 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 (use-package flymake
   :ensure t)
 
-(use-package dap-mode
-  :ensure t
-  :config
-  (require 'dap-python)
-  (setq dap-python-debugger 'debugpy)
-  (setq dap-python-executable "uv run python"))
-
 (use-package flymake-ruff
   :disabled
   :ensure t
@@ -402,20 +395,6 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
               (c-set-offset 'inclass '+)
               (auto-complete-mode)))
   :mode ("\\.h\\'" . c++-mode))
-
-(use-package dape
-  :hook
-  ;; Save breakpoints on quit
-  (kill-emacs . dape-breakpoint-save)
-  ;; Load breakpoints on startup
-  (after-init . dape-breakpoint-load)
-
-  :config
-  ;; Info buffers like gud (gdb-mi)
-  (setq dape-buffer-window-arrangement 'gud)
-  (setq dape-info-hide-mode-line nil)
-
-  :ensure t)
 
 ;; treat .m files as Octave
 (add-to-list 'auto-mode-alist '("\\.m\\'" . octave-mode))
