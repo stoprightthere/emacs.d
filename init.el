@@ -182,6 +182,14 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
     :host "localhost:8080"                ;; llama.cpp server location
     :models '("test")))                   ;; any names, doesn't matter for llama.cpp
 
+(use-package ultra-scroll
+  :ensure t
+  :init
+  (setq scroll-conservatively 3
+        scroll-margin 0)
+  :config
+  (ultra-scroll-mode 1))
+
 
 ;;;;;;;; COMPLETION ;;;;;;;;
 (use-package orderless
