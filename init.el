@@ -308,6 +308,7 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   (when (my/is-on-wsl)
     (setq org-download-screenshot-method my/wsl-dump-clipboard-image-command))
   (when (and
+         (not (my/is-on-wsl))
          (eq system-type 'gnu/linux)
          (executable-find "xclip"))
     (setq org-download-screenshot-method my/xclip-dump-clipboad-image-command))
