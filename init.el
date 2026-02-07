@@ -128,10 +128,6 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 (use-package emojify
   :ensure t)
 
-(use-package vterm
-  :defer t
-  :bind ("C-c v" . vterm))
-
 (use-package doc-view
   :config
   (setq doc-view-resolution 200))
@@ -189,6 +185,100 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
         scroll-margin 0)
   :config
   (ultra-scroll-mode 1))
+
+
+;;;;;;;; VTERM ;;;;;;;;
+(require 'cl-lib)
+(require 'seq)
+(require 'transient)
+
+(defconst my/vterm--switch-keys
+  (append (mapcar #'number-to-string (number-sequence 1 9))
+          '("0")
+          (mapcar (lambda (c) (char-to-string c))
+                  (number-sequence ?a ?z)))
+  "Keys used to select vterm sessions in the transient menu.")
+
+(defun my/vterm--dir-name (dir)
+  "Return a human-friendly name for DIR."
+  (let ((name (file-name-nondirectory (directory-file-name dir))))
+    (if (string= name "") "/" name)))
+
+(defun my/vterm-rename-buffer ()
+  "Rename a vterm buffer to include the current directory name."
+  (when (derived-mode-p 'vterm-mode)
+    (let* ((dir (or default-directory ""))
+           (dir-name (my/vterm--dir-name dir))
+           (base (format "%s [%s]" vterm-buffer-name dir-name))
+           (name (generate-new-buffer-name base)))
+      (rename-buffer name t))))
+
+(defun my/vterm--buffers ()
+  "Return a list of live vterm buffers."
+  (seq-filter
+   (lambda (buf)
+     (buffer-live-p buf))
+   (seq-filter
+    (lambda (buf)
+      (with-current-buffer buf
+        (derived-mode-p 'vterm-mode)))
+    (nreverse (buffer-list)))))
+
+(defun my/vterm-switch-by-name ()
+  "Switch to a vterm buffer using completion."
+  (interactive)
+  (let* ((buffers (my/vterm--buffers))
+         (names (mapcar #'buffer-name buffers)))
+    (if (null names)
+        (user-error "No vterm buffers")
+      (switch-to-buffer
+       (completing-read "Vterm: " names nil t)))))
+
+(defun my/vterm--transient-children (_children)
+  "Build transient suffixes for all vterm buffers."
+  (let* ((buffers (my/vterm--buffers))
+         (keys my/vterm--switch-keys)
+         (direct-count (min (length buffers) (length keys)))
+         (direct-bufs (seq-take buffers direct-count))
+         (extra-bufs (seq-drop buffers direct-count))
+         (suffixes
+          (cl-loop for buf in direct-bufs
+                   for key in keys
+                   collect (list key (buffer-name buf)
+                                 `(lambda ()
+                                    (interactive)
+                                    (switch-to-buffer ,(buffer-name buf)))))))
+    (when extra-bufs
+      (setq suffixes
+            (append suffixes
+                    (list (list "?" "Select by name" #'my/vterm-switch-by-name)
+                          "Other sessions (use `?` to select):")
+                    (mapcar (lambda (buf) (format "  %s" (buffer-name buf)))
+                            extra-bufs))))
+    (when (null buffers)
+      (setq suffixes
+            (list (list "?" "Select by name" #'my/vterm-switch-by-name)
+                  "No vterm buffers")))
+    (append (transient-parse-suffixes
+             'my/vterm-switch
+             (seq-filter #'listp suffixes))
+            (seq-filter #'stringp suffixes))))
+
+(transient-define-prefix my/vterm-switch ()
+  "Switch between vterm sessions."
+  ["Vterm Sessions"
+   :class transient-column
+   :setup-children my/vterm--transient-children]
+  ["Actions"
+   ("n" "New session" vterm)
+   ("g" "Refresh" transient-update)
+   ("q" "Quit" transient-quit-one)])
+
+(use-package vterm
+  :defer t
+  :bind (("C-c v" . my/vterm-switch)
+         ("C-c V" . vterm))
+  :hook (vterm-mode . my/vterm-rename-buffer))
 
 
 ;;;;;;;; COMPLETION ;;;;;;;;
