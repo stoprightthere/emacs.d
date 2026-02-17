@@ -274,11 +274,153 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
    ("g" "Refresh" transient-update)
    ("q" "Quit" transient-quit-one)])
 
+(defun my/vterm-fix-ansi-backgrounds ()
+  "Ensure vterm attributes stay visible with themes that omit term backgrounds."
+  (dolist (face '(vterm-color-black vterm-color-red vterm-color-green
+                                   vterm-color-yellow vterm-color-blue
+                                   vterm-color-magenta vterm-color-cyan
+                                   vterm-color-white vterm-color-bright-black
+                                   vterm-color-bright-red
+                                   vterm-color-bright-green
+                                   vterm-color-bright-yellow
+                                   vterm-color-bright-blue
+                                   vterm-color-bright-magenta
+                                   vterm-color-bright-cyan
+                                   vterm-color-bright-white))
+    (let ((fg (face-foreground face nil 'default))
+          (bg (face-background face nil 'default)))
+      (when (and fg (or (null bg) (string= bg "unspecified-bg")))
+        (set-face-attribute face nil :background fg))))
+  ;; Codex uses inverse video in several UI elements; make it visibly inverted.
+  (let ((default-fg (face-foreground 'default nil 'default))
+        (default-bg (face-background 'default nil 'default)))
+    (when (and default-fg default-bg)
+      (set-face-attribute 'vterm-color-inverse-video nil
+                          :foreground default-bg
+                          :background default-fg))))
+
+(defun my/vterm-with-color-env (orig-fn &rest args)
+  "Run ORIG-FN with `NO_COLOR' removed from child process environment."
+  (let ((process-environment
+         (seq-remove
+          (lambda (entry)
+            (or (string= entry "NO_COLOR")
+                (string-prefix-p "NO_COLOR=" entry)))
+          process-environment)))
+    (apply orig-fn args)))
+
+(defconst my/vterm-sgr2-refresh-script
+  (expand-file-name "local-lisp/vterm-sgr2-refresh.sh" user-emacs-directory)
+  "Script that reapplies the local vterm SGR 2 patch and rebuilds the module.")
+
+(defun my/vterm--latest-install-dir ()
+  "Return newest installed vterm package directory, or nil if missing."
+  (let* ((elpa-dir (expand-file-name "elpa" user-emacs-directory))
+         (dirs (and (file-directory-p elpa-dir)
+                    (directory-files elpa-dir t "^vterm-[0-9].*" t))))
+    (when dirs
+      (car (last (sort dirs #'string-version-lessp))))))
+
+(defun my/vterm--sgr2-patched-p (vterm-dir)
+  "Return non-nil when VTERM-DIR contains the local SGR 2 patch."
+  (let ((header (expand-file-name
+                 "build/libvterm-prefix/src/libvterm/include/vterm.h"
+                 vterm-dir)))
+    (and (file-readable-p header)
+         (with-temp-buffer
+           (insert-file-contents header)
+           (re-search-forward "VTERM_ATTR_FAINT" nil t)))))
+
+(defun my/vterm--refresh-sentinel (proc _event)
+  "Report completion status for PROC."
+  (when (memq (process-status proc) '(exit signal))
+    (if (= (process-exit-status proc) 0)
+        (message "vterm SGR 2 refresh finished")
+      (message "vterm SGR 2 refresh failed; see %s"
+               (buffer-name (process-buffer proc))))))
+
+(defun my/vterm-refresh-sgr2 (&optional quiet)
+  "Reapply local vterm SGR 2 patch and rebuild.
+When QUIET is non-nil, do not pop the output buffer."
+  (interactive)
+  (if (not (file-executable-p my/vterm-sgr2-refresh-script))
+      (if quiet
+          (message "vterm SGR 2 refresh skipped: script is missing")
+        (user-error "Missing executable script: %s" my/vterm-sgr2-refresh-script))
+    (let ((buf (get-buffer-create "*vterm-sgr2-refresh*")))
+      (with-current-buffer buf
+        (erase-buffer))
+      (let ((proc (start-process "vterm-sgr2-refresh"
+                                 buf
+                                 my/vterm-sgr2-refresh-script)))
+        (set-process-sentinel proc #'my/vterm--refresh-sentinel)
+        (unless quiet
+          (display-buffer buf))
+        proc))))
+
+(defun my/vterm--package-name (pkg)
+  "Extract package name symbol from PKG."
+  (cond
+   ((symbolp pkg) pkg)
+   ((and (fboundp 'package-desc-p) (package-desc-p pkg))
+    (package-desc-name pkg))
+   ((and (consp pkg) (symbolp (car pkg)))
+    (car pkg))
+   (t nil)))
+
+(defun my/vterm--refresh-after-package-install (orig-fn pkg &rest args)
+  "Run ORIG-FN, then refresh patched vterm when PKG is `vterm'."
+  (let ((result (apply orig-fn pkg args)))
+    (when (eq (my/vterm--package-name pkg) 'vterm)
+      (my/vterm-refresh-sgr2 t))
+    result))
+
+(defun my/vterm--refresh-after-package-upgrade (orig-fn pkg-desc &rest args)
+  "Run ORIG-FN, then refresh patched vterm after upgrading PKG-DESC."
+  (let ((result (apply orig-fn pkg-desc args)))
+    (when (eq (my/vterm--package-name pkg-desc) 'vterm)
+      (my/vterm-refresh-sgr2 t))
+    result))
+
+(defun my/vterm-maybe-refresh-sgr2 ()
+  "Refresh vterm SGR 2 patch when latest vterm install is unpatched."
+  (let ((vterm-dir (my/vterm--latest-install-dir)))
+    (when (and vterm-dir
+               (not (my/vterm--sgr2-patched-p vterm-dir)))
+      (message "Detected unpatched vterm install at %s; refreshing" vterm-dir)
+      (my/vterm-refresh-sgr2 t))))
+
+(add-hook 'emacs-startup-hook #'my/vterm-maybe-refresh-sgr2)
+
+(with-eval-after-load 'package
+  (unless (advice-member-p #'my/vterm--refresh-after-package-install
+                           'package-install)
+    (advice-add 'package-install :around
+                #'my/vterm--refresh-after-package-install))
+  (when (and (fboundp 'package-upgrade)
+             (not (advice-member-p #'my/vterm--refresh-after-package-upgrade
+                                   'package-upgrade)))
+    (advice-add 'package-upgrade :around
+                #'my/vterm--refresh-after-package-upgrade)))
+
 (use-package vterm
   :defer t
+  :custom
+  (vterm-term-environment-variable "xterm-256color")
+  (vterm-environment '("COLORTERM=truecolor" "FORCE_COLOR=3" "CLICOLOR_FORCE=1"))
+  (vterm-disable-bold-font nil)
+  (vterm-disable-inverse-video nil)
+  (vterm-disable-underline nil)
+  (vterm-set-bold-hightbright t)
   :bind (("C-c v" . my/vterm-switch)
          ("C-c V" . vterm))
-  :hook (vterm-mode . my/vterm-rename-buffer))
+  :config
+  (unless (advice-member-p #'my/vterm-with-color-env 'vterm)
+    (advice-add 'vterm :around #'my/vterm-with-color-env))
+  (unless (advice-member-p #'my/vterm-with-color-env 'vterm-other-window)
+    (advice-add 'vterm-other-window :around #'my/vterm-with-color-env))
+  :hook ((vterm-mode . my/vterm-rename-buffer)
+         (vterm-mode . my/vterm-fix-ansi-backgrounds)))
 
 
 ;;;;;;;; COMPLETION ;;;;;;;;
