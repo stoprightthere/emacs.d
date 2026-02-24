@@ -556,12 +556,25 @@ When QUIET is non-nil, do not pop the output buffer."
   ;; general mu4e config
   (setq
    mail-user-agent                  'mu4e-user-agent
-   mu4e-get-mail-command            "mbsync -a"
+   mu4e-get-mail-command            (format "mbsync -c %s -a"
+                                            (shell-quote-argument
+                                             (expand-file-name my/mbsync-config-file)))
+   mu4e-change-filenames-when-moving t
    mu4e-update-interval             600
    user-mail-address                my/user-mail-address
    user-full-name                   my/user-full-name
    mu4e-view-show-images            t
-   mu4e-sent-messages-behavior      'delete)
+   mu4e-sent-messages-behavior      'delete
+   mu4e-index-lazy-check             t
+   mu4e-index-cleanup                nil)
+
+  ;; Gmail folders synced by mbsync.
+  (setq
+   mu4e-maildir                     (expand-file-name my/maildir-root)
+   mu4e-sent-folder                 "/gmail/[Gmail]/Sent"
+   mu4e-drafts-folder               "/gmail/[Gmail]/Drafts"
+   mu4e-trash-folder                "/gmail/[Gmail]/Trash"
+   mu4e-refile-folder               "/gmail/[Gmail]/All Mail")
 
   ;; headers fields
   (setq mu4e-headers-fields '((:human-date . 12)
@@ -570,19 +583,25 @@ When QUIET is non-nil, do not pop the output buffer."
                               (:from . 22)
                               (:subject)))
 
+  (add-to-list 'mu4e-bookmarks
+               '( :name "Inbox"
+                  :key ?i
+                  :query "maildir:/gmail/INBOX" ))
+
   ;; Gmail send (smtp) config
-  (when my/gmail-smtp
+  (when (or my/gmail-smtp
+            (string-match-p "@gmail\\.com\\'" my/user-mail-address))
       (setq
        message-send-mail-function    'smtpmail-send-it
        smtpmail-default-smtp-server  "smtp.gmail.com"
        smtpmail-smtp-server          "smtp.gmail.com"
+       smtpmail-smtp-user            my/user-mail-address
        smtpmail-local-domain         "gmail.com"
-       smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
+       smtpmail-stream-type          'starttls
+       smtpmail-auth-supported       '(plain login)
        smtpmail-smtp-service         587
-       starttls-extra-arguments      nil
-       starttls-gnutls-program       "gnutls-cli"
-       starttls-extra-arguments      nil
-       starttls-use-gnutls           t)))
+       starttls-extra-arguments      nil)
+    (add-to-list 'auth-sources "~/.authinfo.gpg")))
 
 
 ;;;;;;;; TELEGA ;;;;;;;;

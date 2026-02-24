@@ -63,6 +63,10 @@
   my/user-full-name     (user-full-name))
 (defvar
   my/gmail-smtp         nil)
+(defvar
+  my/mbsync-config-file "~/.emacs.d/.mbsyncrc")
+(defvar
+  my/maildir-root       "~/.mail")
 
 
 (defun my/set-docplist-attribute (plist attribute value)
