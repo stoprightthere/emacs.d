@@ -640,11 +640,10 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
     (setq python-indent-offset 4)
     (hl-line-mode 1)
     (when (file-directory-p "~/.local/bin")
-      (add-to-list 'exec-path "~/.local/bin"))
+      (add-to-list 'exec-path "~/.local/bin")))
    :hook
    (python-mode . my/python-mode-hook)
-   (if (>= emacs-major-version 29)
-       (python-ts-mode . my/python-mode-hook))))
+   (python-ts-mode . my/python-mode-hook))
 
 (use-package cc-mode
   :init
