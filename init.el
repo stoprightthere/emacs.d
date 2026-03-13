@@ -632,6 +632,49 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
 
 
 ;;;;;;;; CODING ;;;;;;;;
+
+(defun my/python-ts-find-ancestor (type)
+  "Walk up the tree-sitter node tree from point and return the first node of TYPE, or nil."
+  (when (and (fboundp 'treesit-node-at)
+             (treesit-available-p)
+             (treesit-buffer-root-node))
+    (let ((node (treesit-node-at (window-start))))
+      (catch 'found
+        (while node
+          (when (equal (treesit-node-type node) type)
+            (throw 'found node))
+          (setq node (treesit-node-parent node)))
+        nil))))
+
+(defun my/python-class-header-update ()
+  "Update the header-line to show current class (and method) when scrolled off screen."
+  (let ((class-node (my/python-ts-find-ancestor "class_definition")))
+    (setq header-line-format
+          (when class-node
+            (let* ((class-pos  (treesit-node-start class-node))
+                   (class-name (let ((n (treesit-node-child-by-field-name class-node "name")))
+                                 (when n (treesit-node-text n t)))))
+              (when (and class-name (< class-pos (window-start)))
+                (let* ((class-line (save-excursion
+                                     (goto-char class-pos)
+                                     (string-trim-left
+                                      (buffer-substring (line-beginning-position)
+                                                        (- (line-end-position) 1)))))
+                       (method-node (my/python-ts-find-ancestor "function_definition"))
+                       (method-name (when method-node
+                                      (let ((n (treesit-node-child-by-field-name method-node "name")))
+                                        (when n (treesit-node-text n t)))))
+                       (suffix (when method-name (concat "->" method-name "()"))))
+                  (list (concat " " class-line suffix " ")))))))))
+
+(define-minor-mode my/python-class-header-mode
+  "Show the current Python class in the header line."
+  :lighter ""
+  (if my/python-class-header-mode
+      (add-hook 'post-command-hook #'my/python-class-header-update nil t)
+    (remove-hook 'post-command-hook #'my/python-class-header-update t)
+    (setq header-line-format nil)))
+
 (use-package python
   :config
   (defun my/python-mode-hook ()
@@ -640,7 +683,9 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
     (setq python-indent-offset 4)
     (hl-line-mode 1)
     (when (file-directory-p "~/.local/bin")
-      (add-to-list 'exec-path "~/.local/bin")))
+      (add-to-list 'exec-path "~/.local/bin"))
+    (when (>= emacs-major-version 29)
+      (my/python-class-header-mode 1)))
    :hook
    (python-mode . my/python-mode-hook)
    (python-ts-mode . my/python-mode-hook))
