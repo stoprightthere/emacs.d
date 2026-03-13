@@ -551,8 +551,22 @@ When QUIET is non-nil, do not pop the output buffer."
 
 ;;;;;;;; MAIL ;;;;;;;;
 ;; mu4e
+(defun my/mu4e-set-mail-password ()
+  (let ((password (string-trim
+                   (with-temp-buffer
+                     (insert-file-contents
+                      (expand-file-name ".gmail-app-password.gpg" user-emacs-directory))
+                     (buffer-string)))))
+    (setenv "GMAIL_APP_PASSWORD" password)))
+
+(defun my/mu4e-clear-mail-password ()
+  (setenv "GMAIL_APP_PASSWORD" nil))
+
 (use-package mu4e
   :bind ("C-c m" . mu4e)
+  :hook
+  (mu4e-update-pre-hook . my/mu4e-set-mail-password)
+  (mu4e-update-post-hook . my/mu4e-clear-mail-password)
   :config
   ;; general mu4e config
   (setq
