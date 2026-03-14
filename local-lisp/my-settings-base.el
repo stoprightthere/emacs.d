@@ -4,7 +4,7 @@
 ;; Themes
 (defvar my/themes
   '(:light tango
-    :dark deeper-blue)
+    :dark  deeper-blue)
   "The plist of the regimes (:light and :dark) and their associated themes.")
 
 (defvar my/current-theme :dark
@@ -18,42 +18,42 @@
   "Toggle light or dark theme defined in my/themes."
   (interactive)
   (disable-theme (my/get-theme my/current-theme))
-  (cond ((eq my/current-theme :light)
+  (cond ((eq   my/current-theme :light)
          (setq my/current-theme :dark))
-        ((eq my/current-theme :dark)
+        ((eq   my/current-theme :dark)
          (setq my/current-theme :light)))
   (load-theme (my/get-theme my/current-theme) t))
 
 ;; Fonts
 (defvar my/font
-  '(:face default
-    :family "Hack"
-    :weight normal
-    :width normal
-    :height 100)
+  '(:face      default
+    :family    "Hack"
+    :weight    normal
+    :width     normal
+    :height    100)
   "The plist associating face attributes with attribute values for the `default` face")
 
 (defvar my/fixed-pitch
-  '(:face fixed-pitch
-    :family "Fira Code")
+  '(:face      fixed-pitch
+    :family    "Fira Code")
   "The plist associating face attributes with attribute values for the `fixed-pitch` face")
 
 (defvar my/variable-pitch
   '(
-    :face variable-pitch
-    :family "Noto Sans")
+    :face      variable-pitch
+    :family    "Noto Sans")
   "The plist associating face attributes with attribute values for the `variable-pitch` face")
 
 ;; org-mode
 (defvar my/org-config
-  '(:org-agenda-files nil
-    :org-inbox-file nil
-    :org-default-notes-file org-default-notes-file
-    :org-work-tasks-file nil
-    :org-personal-tasks-file nil
-    :org-journal-file nil
-    :org-roam-directory nil
-    :org-download-image-dir "~/Images/")
+  '(:org-agenda-files           nil
+    :org-inbox-file             nil
+    :org-default-notes-file     org-default-notes-file
+    :org-work-tasks-file        nil
+    :org-personal-tasks-file    nil
+    :org-journal-file           nil
+    :org-roam-directory         nil
+    :org-download-image-dir     "~/Images/")
   "The plist, associating several org-mode related configurations with specific values of them")
 
 ;; Mail
