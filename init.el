@@ -122,9 +122,6 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   :config
   (which-key-mode))
 
-(use-package emojify
-  :ensure t)
-
 (use-package doc-view
   :config
   (setq doc-view-resolution 200))
