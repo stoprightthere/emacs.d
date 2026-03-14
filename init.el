@@ -78,8 +78,8 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
     (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
 (setq package-archive-priorities
       '(("melpa-stable" . 10)
-        ("gnu" . 5)
-        ("melpa" . 0)))
+        ("gnu"          . 5)
+        ("melpa"        . 0)))
 (package-initialize)
 
 ;; use use-package
@@ -168,16 +168,16 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   :ensure t
   :config
   (gptel-make-openai "llama-cpp"
-    :stream t
-    :protocol "http"
-    :host "localhost:8080"                ;; llama.cpp server location
-    :models '("test")))                   ;; any names, doesn't matter for llama.cpp
+    :stream          t
+    :protocol        "http"
+    :host            "localhost:8080"                ;; llama.cpp server location
+    :models          '("test")))                     ;; any names, doesn't matter for llama.cpp
 
 (use-package ultra-scroll
   :ensure t
   :init
   (setq scroll-conservatively 3
-        scroll-margin 0)
+        scroll-margin         0)
   :config
   (ultra-scroll-mode 1))
 
@@ -266,22 +266,23 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
    :setup-children my/vterm--transient-children]
   ["Actions"
    ("n" "New session" vterm)
-   ("g" "Refresh" transient-update)
-   ("q" "Quit" transient-quit-one)])
+   ("g" "Refresh"     transient-update)
+   ("q" "Quit"        transient-quit-one)])
 
+;; note: this part is vibe-coded
 (defun my/vterm-fix-ansi-backgrounds ()
   "Ensure vterm attributes stay visible with themes that omit term backgrounds."
   (dolist (face '(vterm-color-black vterm-color-red vterm-color-green
-                                   vterm-color-yellow vterm-color-blue
-                                   vterm-color-magenta vterm-color-cyan
-                                   vterm-color-white vterm-color-bright-black
-                                   vterm-color-bright-red
-                                   vterm-color-bright-green
-                                   vterm-color-bright-yellow
-                                   vterm-color-bright-blue
-                                   vterm-color-bright-magenta
-                                   vterm-color-bright-cyan
-                                   vterm-color-bright-white))
+                                    vterm-color-yellow vterm-color-blue
+                                    vterm-color-magenta vterm-color-cyan
+                                    vterm-color-white vterm-color-bright-black
+                                    vterm-color-bright-red
+                                    vterm-color-bright-green
+                                    vterm-color-bright-yellow
+                                    vterm-color-bright-blue
+                                    vterm-color-bright-magenta
+                                    vterm-color-bright-cyan
+                                    vterm-color-bright-white))
     (let ((fg (face-foreground face nil 'default))
           (bg (face-background face nil 'default)))
       (when (and fg (or (null bg) (string= bg "unspecified-bg")))
@@ -397,16 +398,17 @@ When QUIET is non-nil, do not pop the output buffer."
                                    'package-upgrade)))
     (advice-add 'package-upgrade :around
                 #'my/vterm--refresh-after-package-upgrade)))
+;; end of the vibe-coded part
 
 (use-package vterm
   :defer t
   :custom
   (vterm-term-environment-variable "xterm-256color")
-  (vterm-environment '("COLORTERM=truecolor" "FORCE_COLOR=3" "CLICOLOR_FORCE=1"))
-  (vterm-disable-bold-font nil)
-  (vterm-disable-inverse-video nil)
-  (vterm-disable-underline nil)
-  (vterm-set-bold-hightbright t)
+  (vterm-environment               '("COLORTERM=truecolor" "FORCE_COLOR=3" "CLICOLOR_FORCE=1"))
+  (vterm-disable-bold-font         nil)
+  (vterm-disable-inverse-video     nil)
+  (vterm-disable-underline         nil)
+  (vterm-set-bold-hightbright      t)
   :bind (("C-c v" . my/vterm-switch)
          ("C-c V" . vterm))
   :config
@@ -422,7 +424,7 @@ When QUIET is non-nil, do not pop the output buffer."
 (use-package orderless
   :ensure t
   :custom
-  (completion-styles '(orderless basic))
+  (completion-styles             '(orderless basic))
   (completion-category-overrides '((file (styles basic partial-completion)))))
 
 (use-package vertico
@@ -484,37 +486,34 @@ When QUIET is non-nil, do not pop the output buffer."
 ;; org-mode
 (use-package org
   :config
-  (setq org-log-done t)
-  (setq org-startup-indented t)
-  (setq org-image-actual-width 512)
-  (setq org-todo-keywords
-        '((sequence "TODO" "|" "DONE")
-          (sequence "|" "CANCELLED")))
-  (setq org-hide-emphasis-markers t)
-  (setq org-pretty-entities nil)
-  (setq org-ellipsis " …")
+  (setq org-log-done              t
+        org-startup-indented      t
+        org-image-actual-width    512
+        org-todo-keywords         '((sequence "TODO" "|" "DONE")
+                                    (sequence "|" "CANCELLED"))
+        org-hide-emphasis-markers t
+        org-pretty-entities       nil
+        org-ellipsis              " …"
+        org-agenda-files          (plist-get my/org-config :org-agenda-files)
+        org-default-notes-file    (plist-get my/org-config :org-default-notes-file)
+        org-id-link-to-org-use-id 'create-if-interactive)
+
+  ;; org-capture
+  (setq org-capture-templates
+      `(("t" "Todo"    entry (file ,(plist-get my/org-config :org-inbox-file))
+         "* TODO %?\n%U\n%a")
+        ("m" "Meeting" entry (file+headline ,(plist-get my/org-config :org-inbox-file) "Meetings")
+         "* %? \n%^T\n")
+        ("s" "Stuff"   entry (file ,(plist-get my/org-config :org-inbox-file))
+         "* %?\n %U")
+        ("j" "Journal" entry (file+datetree ,(plist-get my/org-config :org-journal-file))
+         "* %?\n")))
 
   (add-hook 'org-mode-hook
             (lambda ()
               (visual-line-mode)
               (variable-pitch-mode)
               (org-superstar-mode)))
-
-  (setq org-agenda-files (plist-get my/org-config :org-agenda-files))
-  (setq org-default-notes-file (plist-get my/org-config :org-default-notes-file))
-
-  (setq org-id-link-to-org-use-id 'create-if-interactive)
-
-  ;; org-capture
-  (setq org-capture-templates
-      `(("t" "Todo" entry (file ,(plist-get my/org-config :org-inbox-file))
-         "* TODO %?\n%U\n%a")
-        ("m" "Meeting" entry (file+headline ,(plist-get my/org-config :org-inbox-file) "Meetings")
-         "* %? \n%^T\n")
-        ("s" "Stuff" entry (file ,(plist-get my/org-config :org-inbox-file))
-         "* %?\n %U")
-        ("j" "Journal" entry (file+datetree ,(plist-get my/org-config :org-journal-file))
-         "* %?\n")))
 
   :bind
   ("C-c a" . org-agenda)
@@ -559,21 +558,21 @@ When QUIET is non-nil, do not pop the output buffer."
 (use-package mu4e
   :bind ("C-c m" . mu4e)
   :hook
-  (mu4e-update-pre-hook . my/mu4e-set-mail-password)
+  (mu4e-update-pre-hook  . my/mu4e-set-mail-password)
   (mu4e-update-post-hook . my/mu4e-clear-mail-password)
   :config
   ;; general mu4e config
   (setq
-   mail-user-agent                  'mu4e-user-agent
-   mu4e-get-mail-command            (format "mbsync -c %s -a"
-                                            (shell-quote-argument
-                                             (expand-file-name my/mbsync-config-file)))
+   mail-user-agent                   'mu4e-user-agent
+   mu4e-get-mail-command             (format "mbsync -c %s -a"
+                                             (shell-quote-argument
+                                              (expand-file-name my/mbsync-config-file)))
    mu4e-change-filenames-when-moving t
-   mu4e-update-interval             600
-   user-mail-address                my/user-mail-address
-   user-full-name                   my/user-full-name
-   mu4e-view-show-images            t
-   mu4e-sent-messages-behavior      'delete
+   mu4e-update-interval              600
+   user-mail-address                 my/user-mail-address
+   user-full-name                    my/user-full-name
+   mu4e-view-show-images             t
+   mu4e-sent-messages-behavior       'delete
    mu4e-index-lazy-check             t
    mu4e-index-cleanup                nil)
 
@@ -587,14 +586,14 @@ When QUIET is non-nil, do not pop the output buffer."
 
   ;; headers fields
   (setq mu4e-headers-fields '((:human-date . 12)
-                              (:maildir . 12)
-                              (:flags . 6)
-                              (:from . 22)
+                              (:maildir    . 12)
+                              (:flags      . 6)
+                              (:from       . 22)
                               (:subject)))
 
   (add-to-list 'mu4e-bookmarks
-               '( :name "Inbox"
-                  :key ?i
+               '( :name  "Inbox"
+                  :key   ?i
                   :query "maildir:/gmail/INBOX" ))
 
   ;; Gmail send (smtp) config
@@ -640,7 +639,6 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
 
 
 ;;;;;;;; CODING ;;;;;;;;
-
 (defun my/python-ts-find-ancestor (type)
   "Walk up the tree-sitter node tree from point and return the first node of TYPE, or nil."
   (when (and (fboundp 'treesit-node-at)
@@ -686,9 +684,10 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
 (use-package python
   :config
   (defun my/python-mode-hook ()
-    (setq indent-tabs-mode nil)
-    (setq tab-width 4)
-    (setq python-indent-offset 4)
+    (setq
+     indent-tabs-mode     nil
+     tab-width            4
+     python-indent-offset 4)
     (hl-line-mode 1)
     (when (file-directory-p "~/.local/bin")
       (add-to-list 'exec-path "~/.local/bin"))
@@ -702,10 +701,10 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
   :init
   (add-hook 'c++-mode-hook
             (lambda ()
-              (define-key c++-mode-map [?\C-c ?\C-c] 'compile)
-              (define-key c++-mode-map [?\C-c d]   'gdb)
+              (define-key c++-mode-map  [?\C-c ?\C-c] 'compile)
+              (define-key c++-mode-map  [?\C-c d]     'gdb)
               (c-set-offset 'access-label '0)
-              (c-set-offset 'inclass '+)
+              (c-set-offset 'inclass      '+)
               (auto-complete-mode)))
   :mode ("\\.h\\'" . c++-mode))
 
