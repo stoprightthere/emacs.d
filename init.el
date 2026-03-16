@@ -444,19 +444,7 @@ When QUIET is non-nil, do not pop the output buffer."
   (when (file-exists-p my/settings-overload-file)
     (require 'my-settings)))
 
-;; Theme
-(load-theme (my/get-theme my/current-theme) t)
-
 ;; Fonts
-(let ((font-attributes '(:family :weight :height :width))
-      (font-settings '(my/font my/variable-pitch my/fixed-pitch)))
-  (dolist (attribute font-attributes)
-    (dolist (settings font-settings)
-      (let ((attribute-value (plist-get (eval settings) attribute))
-            (face (plist-get (eval settings) :face)))
-        (if attribute-value
-            (set-face-attribute face nil attribute attribute-value))))))
-
 (when (>= emacs-major-version 28)
   (use-package ligature
     :ensure t

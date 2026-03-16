@@ -2,10 +2,6 @@
 ;; in a separate file my-settings.el.
 
 ;; Themes
-(defvar my/themes
-  '(:light tango
-    :dark  deeper-blue)
-  "The plist of the regimes (:light and :dark) and their associated themes.")
 
 (defvar my/current-theme :dark
   "The current theme regime (:light or :dark).")
@@ -24,25 +20,53 @@
          (setq my/current-theme :light)))
   (load-theme (my/get-theme my/current-theme) t))
 
+
+(defcustom my/themes
+  '(:light tango
+    :dark  deeper-blue)
+  "The plist of the regimes (:light and :dark) and their associated themes."
+  :set (lambda (sym val)
+         (set-default-toplevel-value sym val)
+         ;; reload the theme
+         (disable-theme (my/get-theme my/current-theme))
+         (load-theme (my/get-theme my/current-theme) t)))
+
+
 ;; Fonts
-(defvar my/font
+(defun my/set-font-attributes (settings)
+  (let ((font-attributes '(:family :weight :height :width)))
+    (dolist (attribute font-attributes)
+      (let ((attribute-value (plist-get settings attribute))
+            (face (plist-get settings :face)))
+        (if attribute-value
+            (set-face-attribute face nil attribute attribute-value))))))
+
+(defcustom my/font
   '(:face      default
     :family    "Hack"
     :weight    normal
     :width     normal
     :height    100)
-  "The plist associating face attributes with attribute values for the `default` face")
+  "The plist associating face attributes with attribute values for the `default` face"
+  :set (lambda (sym val)
+         (set-default-toplevel-value sym val)
+         (my/set-font-attributes my/font)))
 
-(defvar my/fixed-pitch
+(defcustom my/fixed-pitch
   '(:face      fixed-pitch
-    :family    "Fira Code")
-  "The plist associating face attributes with attribute values for the `fixed-pitch` face")
+               :family    "Fira Code")
+  "The plist associating face attributes with attribute values for the `fixed-pitch` face"
+  :set (lambda (sym val)
+         (set-default-toplevel-value sym val)
+         (my/set-font-attributes my/fixed-pitch)))
 
-(defvar my/variable-pitch
-  '(
-    :face      variable-pitch
+(defcustom my/variable-pitch
+  '(:face      variable-pitch
     :family    "Noto Sans")
-  "The plist associating face attributes with attribute values for the `variable-pitch` face")
+  "The plist associating face attributes with attribute values for the `variable-pitch` face"
+  :set (lambda (sym val)
+         (set-default-toplevel-value sym val)
+         (my/set-font-attributes my/variable-pitch)))
 
 ;; org-mode
 (defvar my/org-config
@@ -72,5 +96,10 @@
 (defun my/set-docplist-attribute (plist attribute value)
   "Set the VALUE of the ATTRIBUTE of the plist PLIST."
   (setq plist (plist-put plist attribute value)))
+
+(defmacro my/set-docplist-attribute-option (option attribute value)
+  "Set the VALUE of the ATTRIBUTE of the plist OPTION that is a customizable variable."
+  `(setopt ,option
+          (plist-put (copy-sequence ,option) ,attribute ,value)))
 
 (provide 'my-settings-base)
