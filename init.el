@@ -31,6 +31,7 @@
 (add-to-list 'load-path "~/.emacs.d/local-lisp")
 (setq load-prefer-newer t)
 
+(setq epg-pinentry-mode 'loopback)
 
 ;;;;;;;; WSL ;;;;;;;;
 (when (eq system-type 'windows-nt)
