@@ -547,8 +547,8 @@ When QUIET is non-nil, do not pop the output buffer."
 (use-package mu4e
   :bind ("C-c m" . mu4e)
   :hook
-  (mu4e-update-pre-hook  . my/mu4e-set-mail-password)
-  (mu4e-update-post-hook . my/mu4e-clear-mail-password)
+  (mu4e-update-pre    . my/mu4e-set-mail-password)    ;; note: weird name because :hook appends the `-hook` suffix
+  (mu4e-index-updated . my/mu4e-clear-mail-password)
   :config
   ;; general mu4e config
   (setq
