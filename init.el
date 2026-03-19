@@ -130,6 +130,7 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 
 ;; grep -> ripgrep
 (use-package grep
+  ;; builtin
   :config
   (when (executable-find "rg")
     (grep-apply-setting  ;; orig:
@@ -182,6 +183,10 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
         scroll-margin         0)
   :config
   (ultra-scroll-mode 1))
+
+(use-package indent-bars
+  :ensure t
+  :hook ((python-mode python-ts-mode yaml-mode) . indent-bars-mode))
 
 
 ;;; VTERM ;;;;;;;;;;;;;;;;;;;;
