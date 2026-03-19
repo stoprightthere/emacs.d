@@ -43,10 +43,10 @@
 
 (defcustom my/font
   '(:face      default
-    :family    "Hack"
+    :family    "Iosevka"
     :weight    normal
     :width     normal
-    :height    100)
+    :height    150)
   "The plist associating face attributes with attribute values for the `default` face"
   :set (lambda (sym val)
          (set-default-toplevel-value sym val)
@@ -54,7 +54,7 @@
 
 (defcustom my/fixed-pitch
   '(:face      fixed-pitch
-               :family    "Fira Code")
+    :family    "Iosevka")
   "The plist associating face attributes with attribute values for the `fixed-pitch` face"
   :set (lambda (sym val)
          (set-default-toplevel-value sym val)
@@ -62,7 +62,8 @@
 
 (defcustom my/variable-pitch
   '(:face      variable-pitch
-    :family    "Noto Sans")
+     :family   "Iosevka Etoile"
+     :height   150)
   "The plist associating face attributes with attribute values for the `variable-pitch` face"
   :set (lambda (sym val)
          (set-default-toplevel-value sym val)

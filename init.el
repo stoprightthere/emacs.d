@@ -448,9 +448,10 @@ When QUIET is non-nil, do not pop the output buffer."
 ;;; PERSONAL SETTINGS ;;;;;;;;
 (let* ((my/settings-base-file "~/.emacs.d/local-lisp/my-settings-base.el")
        (my/settings-overload-file "~/.emacs.d/local-lisp/my-settings.el"))
+  ;; defines some customizable options
   (require 'my-settings-base)
   (when (file-exists-p my/settings-overload-file)
-    (require 'my-settings)))
+    (require 'my-settings)))  ;; sets those options and add some private stuff
 
 ;; custom mode to display base64-encoded images in markdown (logseq)
 (require 'md-base64-image-mode)
