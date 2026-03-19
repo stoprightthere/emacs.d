@@ -132,11 +132,11 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   :config
   (when (executable-find "rg")
     (grep-apply-setting  ;; orig:
-     'grep-command '("rg -nS --no-heading "))
+     'grep-command "rg -nS --no-heading ")
     (grep-apply-setting
      'grep-find-command
      ;; orig: ("find . -type f -exec grep --color=auto -nH --null -e  \\{\\} +" . 54)
-     '("rg -n -H --no-heading -e '' $(git rev-parse --show-toplevel || pwd)" . 27))
+     '("rg -n -H --no-heading -e '' $(git rev-parse --show-toplevel 2> /dev/null || pwd)" . 27))
     (grep-apply-setting
      'grep-use-null-device nil)))
 
