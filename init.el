@@ -1,5 +1,6 @@
 ;; my emacs customizing
 
+;;; GENERAL EMACS ;;;;;;;;;;;;
 ;; Better looks
 (menu-bar-mode 0)
 (tool-bar-mode 0)
@@ -33,7 +34,7 @@
 
 (setq epg-pinentry-mode 'loopback)
 
-;;;;;;;; WSL ;;;;;;;;
+;;; WSL ;;;;;;;;;;;;;;;;;;;;;;
 (when (eq system-type 'windows-nt)
     (defun fp/ignore-wsl-acls (orig-fun &rest args)
       "Ignore ACLs on WSL. WSL does not provide an ACL, but emacs
@@ -65,7 +66,7 @@ Example usage:
 Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues/178#issuecomment-1367606769'.")
 
 
-;;;;;;;; PACKAGES ;;;;;;;;
+;;; PACKAGES ;;;;;;;;;;;;;;;;;
 ;; elpa config
 (require 'package)
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
@@ -183,7 +184,7 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
   (ultra-scroll-mode 1))
 
 
-;;;;;;;; VTERM ;;;;;;;;
+;;; VTERM ;;;;;;;;;;;;;;;;;;;;
 (require 'cl-lib)
 (require 'seq)
 (require 'transient)
@@ -421,7 +422,7 @@ When QUIET is non-nil, do not pop the output buffer."
          (vterm-mode . my/vterm-fix-ansi-backgrounds)))
 
 
-;;;;;;;; COMPLETION ;;;;;;;;
+;;; COMPLETION ;;;;;;;;;;;;;;;
 (use-package orderless
   :ensure t
   :custom
@@ -437,7 +438,7 @@ When QUIET is non-nil, do not pop the output buffer."
 (setq tab-always-indent 'complete)
 
 
-;;;;;;;; PERSONAL SETTINGS ;;;;;;;;
+;;; PERSONAL SETTINGS ;;;;;;;;
 (let* ((my/settings-base-file "~/.emacs.d/local-lisp/my-settings-base.el")
        (my/settings-overload-file "~/.emacs.d/local-lisp/my-settings.el"))
   (require 'my-settings-base)
@@ -531,7 +532,7 @@ When QUIET is non-nil, do not pop the output buffer."
    org-download-image-dir (plist-get my/org-config :org-download-image-dir)))
 
 
-;;;;;;;; MAIL ;;;;;;;;
+;;; MAIL ;;;;;;;;;;;;;;;;;;;;;
 ;; mu4e
 (defun my/mu4e-set-mail-password ()
   (let ((password (string-trim
@@ -601,7 +602,7 @@ When QUIET is non-nil, do not pop the output buffer."
     (add-to-list 'auth-sources "~/.authinfo.gpg")))
 
 
-;;;;;;;; TELEGA ;;;;;;;;
+;;; TELEGA ;;;;;;;;;;;;;;;;;;;
 (defun my/telega-attach-clipboard-wsl (doc-p)
   "Attach image from the clipboard in telega chatbuf under WSL.
 
@@ -627,7 +628,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
   :bind (:map telega-chat-mode-map ("C-c C-v" . my/telega-attach-clipboard-wsl)))
 
 
-;;;;;;;; CODING ;;;;;;;;
+;;; CODING ;;;;;;;;;;;;;;;;;;;
 (use-package eglot
   :ensure nil
   :custom
@@ -717,7 +718,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
 
 (setq project-vc-extra-root-markers '("Cargo.toml" "pyproject.toml" "go.mod"))  ;; for nested projects
 
-;;;;;;;; DIRED ;;;;;;;;
+;;; DIRED ;;;;;;;;;;;;;;;;;;;;
 (use-package dired
   :hook (dired-mode . dired-omit-mode)
   :custom
@@ -727,12 +728,12 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
   (dired-kill-when-opening-new-dired-buffer t))
 
 
-;;;;;;;; SPECIAL KEYS ;;;;;;;;
+;;; SPECIAL KEYS ;;;;;;;;;;;;;
 (global-set-key (kbd "C-c l") 'goto-line)
 (global-set-key (kbd "M-s f") #'find-name-dired)
 
 
-;;;;;;;; WINDOWS ;;;;;;;;
+;;; WINDOWS ;;;;;;;;;;;;;;;;;;
 ;; some Windows-specific options that are not local
 (when (memq system-type '(windows-nt ms-dos))
   ;; tramp for windows
@@ -750,6 +751,12 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
   (ad-activate 'grep-compute-defaults))
 
 
-;;;;;;;; CUSTOM ;;;;;;;;
+;;; CUSTOM ;;;;;;;;;;;;;;;;;;;
 ;; set custom file for Customize but never load it
 (setq custom-file "~/.emacs.d/local-lisp/custom.el")
+
+;; Local Variables:
+;; outline-minor-mode-cycle: t
+;; outline-regexp: ";;; "
+;; eval: (outline-minor-mode)
+;; End:
