@@ -473,7 +473,7 @@ When QUIET is non-nil, do not pop the output buffer."
     ;; per mode with `ligature-mode'.
     (global-ligature-mode t)))
 
-;; org-mode
+;;; ORG-MODE ;;;;;;;;;;;;;;;;;
 (use-package org
   :config
   (setq org-log-done              t
