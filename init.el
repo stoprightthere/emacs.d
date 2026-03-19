@@ -704,18 +704,21 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
 ;; prevents the echo area blowing up with a huge doc
 (setq eldoc-echo-area-use-multiline-p 3)
 
+(setq project-vc-extra-root-markers '("Cargo.toml" "pyproject.toml" "go.mod"))  ;; for nested projects
 
 ;;;;;;;; DIRED ;;;;;;;;
-(use-package dired-x
+(use-package dired
   :hook (dired-mode . dired-omit-mode)
-  :config
-  (setq dired-listing-switches "-alh")
-  (setq dired-omit-files
-        (concat dired-omit-files "\\|^\\..+$")))
+  :custom
+  (dired-listing-switches                   "-alh")
+  (dired-omit-files                         (concat dired-omit-files "\\|^\\..+$"))
+  (dired-auto-revert-buffer                 t)
+  (dired-kill-when-opening-new-dired-buffer t))
 
 
 ;;;;;;;; SPECIAL KEYS ;;;;;;;;
 (global-set-key (kbd "C-c l") 'goto-line)
+(global-set-key (kbd "M-s f") #'find-name-dired)
 
 
 ;;;;;;;; WINDOWS ;;;;;;;;
