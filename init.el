@@ -557,7 +557,7 @@ When QUIET is non-nil, do not pop the output buffer."
                                              (shell-quote-argument
                                               (expand-file-name my/mbsync-config-file)))
    mu4e-change-filenames-when-moving t
-   mu4e-update-interval              600
+   mu4e-update-interval              3600
    user-mail-address                 my/user-mail-address
    user-full-name                    my/user-full-name
    mu4e-view-show-images             t
