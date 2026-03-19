@@ -131,6 +131,8 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 ;; grep -> ripgrep
 (use-package grep
   ;; builtin
+  :bind
+  ("C-c e g" . grep-find)
   :config
   (when (executable-find "rg")
     (grep-apply-setting  ;; orig:
@@ -726,6 +728,8 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
 ;;; DIRED ;;;;;;;;;;;;;;;;;;;;
 (use-package dired
   :hook (dired-mode . dired-omit-mode)
+  :bind
+  ("M-s f" . find-name-dired)
   :custom
   (dired-listing-switches                   "-alh")
   (dired-omit-files                         (concat dired-omit-files "\\|^\\..+$"))
@@ -735,7 +739,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
 
 ;;; SPECIAL KEYS ;;;;;;;;;;;;;
 (global-set-key (kbd "C-c l") 'goto-line)
-(global-set-key (kbd "M-s f") #'find-name-dired)
+(global-set-key (kbd "C-c e z") #'my/toggle-light-dark-theme)
 
 
 ;;; WINDOWS ;;;;;;;;;;;;;;;;;;
