@@ -452,6 +452,9 @@ When QUIET is non-nil, do not pop the output buffer."
   (when (file-exists-p my/settings-overload-file)
     (require 'my-settings)))
 
+;; custom mode to display base64-encoded images in markdown (logseq)
+(require 'md-base64-image-mode)
+
 ;; Fonts
 (when (>= emacs-major-version 28)
   (use-package ligature
