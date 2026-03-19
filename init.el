@@ -628,6 +628,17 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
 
 
 ;;;;;;;; CODING ;;;;;;;;
+(use-package eglot
+  :ensure nil
+  :custom
+  (eglot-autoshutdown t)
+  :bind
+  (:map eglot-mode-map
+        ("C-c 0 a" . eglot-code-actions)
+        ("C-c 0 i" . eglot-code-action-organize-imports)
+        ("C-c 0 r" . eglot-rename)
+        ("C-c 0 f" . eglot-format)))
+
 (defun my/python-ts-find-ancestor (type)
   "Walk up the tree-sitter node tree from point and return the first node of TYPE, or nil."
   (when (and (fboundp 'treesit-node-at)
