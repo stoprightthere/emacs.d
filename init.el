@@ -454,7 +454,8 @@ When QUIET is non-nil, do not pop the output buffer."
     (require 'my-settings)))  ;; sets those options and add some private stuff
 
 ;; custom mode to display base64-encoded images in markdown (logseq)
-(require 'md-base64-image-mode)
+(use-package md-base64-image-mode
+  :hook (markdown-mode . md-base64-image-mode))
 
 ;; Fonts
 (when (>= emacs-major-version 28)
