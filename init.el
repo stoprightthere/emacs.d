@@ -731,12 +731,13 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
 
 ;;; DIRED ;;;;;;;;;;;;;;;;;;;;
 (use-package dired
-  :hook (dired-mode . dired-omit-mode)
+  :hook
+  (dired-mode . dired-omit-mode)
+  (dired-mode . dired-hide-details-mode)
   :bind
   ("M-s f" . find-name-dired)
   :custom
   (dired-listing-switches                   "-alh")
-  (dired-omit-files                         (concat dired-omit-files "\\|^\\..+$"))
   (dired-auto-revert-buffer                 t)
   (dired-kill-when-opening-new-dired-buffer t))
 
