@@ -147,7 +147,6 @@ Credit goes to fkgruber, see URL `https://github.com/abo-abo/org-download/issues
 ;; use tree-sitter when emacs is old
 (when (< emacs-major-version 29)
   (use-package tree-sitter
-    :hook (python-mode . tree-sitter-hl-mode)
     :ensure t)
   (use-package tree-sitter-langs
     :ensure t))
@@ -705,7 +704,7 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
      indent-tabs-mode     nil
      tab-width            4
      python-indent-offset 4)
-    (hl-line-mode 1)
+    (hl-line-mode 0)
     (when (file-directory-p "~/.local/bin")
       (add-to-list 'exec-path "~/.local/bin"))
     (when (>= emacs-major-version 29)
