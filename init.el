@@ -645,6 +645,10 @@ If `\\[universal-argument]' is given, then attach clipboard as document.
   :ensure nil
   :custom
   (eglot-autoshutdown t)
+  :config
+  (add-to-list 'eglot-server-programs
+               '((python-mode python-ts-mode)
+                 . ("uvx" "pyrefly" "lsp")))
   :bind
   (:map eglot-mode-map
         ("C-c 0 a" . eglot-code-actions)
