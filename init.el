@@ -34,6 +34,16 @@
 
 (setq epg-pinentry-mode 'loopback)
 
+(setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
+(setq bidi-inhibit-bpa t)
+(setq redisplay-skip-fontification-on-input t)
+(setq save-interprogram-paste-before-kill t)
+(setq kill-do-not-save-duplicates t)
+(setq window-combination-resize t)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+(setq enable-recursive-minibuffers t)
+
 ;;; WSL ;;;;;;;;;;;;;;;;;;;;;;
 (when (eq system-type 'windows-nt)
     (defun fp/ignore-wsl-acls (orig-fun &rest args)
